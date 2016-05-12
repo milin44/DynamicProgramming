@@ -2,100 +2,106 @@ import java.util.*;
 
 public class DeathStar {
 
-	static int optimalForNonRepeatableMissions(final int totalTime, final int[] missionTimes,
-			final int[] missionDamages) {
-		int totalNrOfAvailableMissions = missionTimes.length;
-		int damages[][] = new int[totalTime + 1][totalNrOfAvailableMissions + 1];
-		for (int missionNr = 1; missionNr <= totalNrOfAvailableMissions; missionNr++) {
-			int missionTime = missionTimes[missionNr - 1];
-			int damage = missionDamages[missionNr - 1];
-			for (int currentTotalTime = 1; currentTotalTime <= totalTime; currentTotalTime++) {
-				damages[currentTotalTime][missionNr] = damages[currentTotalTime][missionNr - 1];
-				if (missionTime <= currentTotalTime) {
-					int damageForAddingCurrentMission = damages[currentTotalTime - missionTime][missionNr - 1] + damage;
-					if (damages[currentTotalTime][missionNr] < damageForAddingCurrentMission) {
-						damages[currentTotalTime][missionNr] = damageForAddingCurrentMission;
-					}
-				}
-			}
-		}
-		printTable(damages);
-		return damages[totalTime][totalNrOfAvailableMissions];
-	}
+    static int[][] optimalForNonRepeatableMissions(final int totalTime, final int[] missionTimes,
+                                                   final int[] missionDamages) {
+        int totalNrOfAvailableMissions = missionTimes.length;
+        int damages[][] = new int[totalTime + 1][totalNrOfAvailableMissions + 1];
+        for (int missionNr = 1; missionNr <= totalNrOfAvailableMissions; missionNr++) {
+            int missionTime = missionTimes[missionNr - 1];
+            int damage = missionDamages[missionNr - 1];
+            for (int currentTotalTime = 1; currentTotalTime <= totalTime; currentTotalTime++) {
+                damages[currentTotalTime][missionNr] = damages[currentTotalTime][missionNr - 1];
+                if (missionTime <= currentTotalTime) {
+                    int damageForAddingCurrentMission = damages[currentTotalTime - missionTime][missionNr - 1] + damage;
+                    if (damages[currentTotalTime][missionNr] < damageForAddingCurrentMission) {
+                        damages[currentTotalTime][missionNr] = damageForAddingCurrentMission;
 
-	static int[][] optimalForRepeatableMissions(final int totalTime, final int[] missionTimes,
-			final int[] missionDamages) {
-		int totalNrOfAvailableMissions = missionTimes.length;
-		int damages[][] = new int[totalTime + 1][2]; // add one extra dimension for storing index for used mission
+                    }
+                }
+            }
+        }
+        return damages;
+    }
 
-		for (int currentTotalTime = 1; currentTotalTime <= totalTime; currentTotalTime++) {
-			damages[currentTotalTime][1] = -1;
-			for (int missionNr = 1; missionNr <= totalNrOfAvailableMissions; missionNr++) {
-				int missionTime = missionTimes[missionNr - 1];
-				int damage = missionDamages[missionNr - 1];
-				if (missionTime <= currentTotalTime) {
-					int damageForAddingCurrentMission = damages[currentTotalTime - missionTime][0] + damage;
-					if (damages[currentTotalTime][0] < damageForAddingCurrentMission) {
-						damages[currentTotalTime][0] = damageForAddingCurrentMission;
-						damages[currentTotalTime][1] = missionNr;
-					}
-				}
-			}
-		}
-		return damages;
-	}
+    static int[][] optimalForRepeatableMissions(final int totalTime, final int[] missionTimes,
+                                                final int[] missionDamages) {
+        int totalNrOfAvailableMissions = missionTimes.length;
+        int damages[][] = new int[totalTime + 1][2]; // add one extra dimension for storing index for used mission
 
-	private static void printTable(final int[][] tbl) {
-		System.out.println();
-		for (int r = 0; r < tbl.length; r++) {
-			for (int c = 0; c < tbl[r].length; c++) {
-				System.out.print(String.format("%02d ", tbl[r][c]));
-			}
-			System.out.println();
-		}
-		System.out.println();
-	}
+        for (int currentTotalTime = 1; currentTotalTime <= totalTime; currentTotalTime++) {
+            damages[currentTotalTime][1] = -1;
+            for (int missionNr = 1; missionNr <= totalNrOfAvailableMissions; missionNr++) {
+                int missionTime = missionTimes[missionNr - 1];
+                int damage = missionDamages[missionNr - 1];
+                if (missionTime <= currentTotalTime) {
+                    int damageForAddingCurrentMission = damages[currentTotalTime - missionTime][0] + damage;
+                    if (damages[currentTotalTime][0] < damageForAddingCurrentMission) {
+                        damages[currentTotalTime][0] = damageForAddingCurrentMission;
+                        damages[currentTotalTime][1] = missionNr;
+                    }
+                }
+            }
+        }
+        return damages;
+    }
 
-	private static void printDamagesVector(final int[][] damages) {
-		System.out.println();
-		for (int d = 0; d < damages.length; d++) {
-			System.out.print(String.format("%02d ", damages[d][0]));
-		}
-		System.out.println();
-	}
+    private static void printDamagesMatrice(final int[][] tbl) {
+        System.out.println();
+        for (int c = 0; c < tbl[0].length; c++) {
+            for (int r = 0; r < tbl.length; r++) {
+                System.out.print(String.format("%02d ", tbl[r][c]));
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
 
-	private static void printMissionsVector(final int[][] damages, final int[] missionTimes) {
-		List<Integer> sequence = new ArrayList<>();
-		int damagesIndex = damages.length - 1;
-		int currentMissionNr = damages[damagesIndex][1];
-		while (currentMissionNr > 0) {
-			sequence.add(Integer.valueOf((currentMissionNr)));
-			damagesIndex -= missionTimes[currentMissionNr - 1];
-			currentMissionNr = damages[damagesIndex][1];
-		}
-		Collections.reverse(sequence);
+    private static void printDamagesVector(final int[][] damages) {
+        System.out.println();
+        for (int d = 0; d < damages.length; d++) {
+            System.out.print(String.format("%02d ", damages[d][0]));
+        }
+        System.out.println();
+    }
 
-		for (Integer missionNr : sequence) {
-			System.out.print(missionNr + " ");
-		}
-	}
+    private static void printExecutedMissionsVector(final int[][] damages, final int[] missionTimes) {
+        List<Integer> sequence = new ArrayList<>();
+        int damagesIndex = damages.length - 1;
+        int currentMissionNr = damages[damagesIndex][1];
+        while (currentMissionNr > 0) {
+            sequence.add(Integer.valueOf((currentMissionNr)));
+            damagesIndex -= missionTimes[currentMissionNr - 1];
+            currentMissionNr = damages[damagesIndex][1];
+        }
+        Collections.reverse(sequence);
 
-	public static void main(String[] args) {
-		// System.out.println(optimalForNonRepeatableMissions(10, new int[] {2,
-		// 4, 6, 7}, new int[] {4, 10, 12, 14})); // = 22
-		final int[] missionTimes = new int[] { 2, 4, 6, 7 };
-		final int[] missionDamages = new int[] { 4, 10, 12, 14 };
-		int[][] damages = optimalForRepeatableMissions(10, missionTimes, missionDamages); // =
-		System.out.println(damages[damages.length - 1][0]);
-																							// 24
-		printDamagesVector(damages);
-		printMissionsVector(damages, missionTimes);
+        for (Integer missionNr : sequence) {
+            System.out.print(missionNr + " ");
+        }
+    }
 
-		// System.out.println(optimalMissions(10, new int[] {1, 4, 8}, new int[]
-		// {2, 8, 16}));
-		// System.out.println(optimalWeight(1, new int[] {1, 4, 8}));
-		// System.out.println(optimalWeight(1, new int[] {4, 8}));
-		// System.out.println(optimalWeight(1, new int[] {1}));
-		// System.out.println(optimalWeight(1, new int[] {0}));
-	}
+    public static void main(String[] args) {
+        final int[] missionTimes = new int[]{2, 4, 6, 7};
+        final int[] missionDamages = new int[]{4, 10, 12, 14};
+        final int totalTime = 10;
+
+        int[][] damagesRepeatable = optimalForRepeatableMissions(totalTime, missionTimes, missionDamages); // = 24
+        System.out.println("Maximum damage for repeatable missions is: " + damagesRepeatable[damagesRepeatable.length - 1][0]);
+        System.out.println();
+        System.out.println("Damage vector:");
+        printDamagesVector(damagesRepeatable);
+        System.out.println();
+        System.out.println("Executed missions:");
+        printExecutedMissionsVector(damagesRepeatable, missionTimes);
+        System.out.println();
+        System.out.println();
+
+        int[][] damagesNonRepeatable = optimalForNonRepeatableMissions(totalTime, missionTimes, missionDamages); // = 22
+        System.out.println("Maximum damage for non-repeatable missions is: " + damagesNonRepeatable[totalTime][missionTimes.length]);
+        System.out.println();
+        System.out.println("Damage matrice:");
+        printDamagesMatrice(damagesNonRepeatable);
+
+
+    }
 }
